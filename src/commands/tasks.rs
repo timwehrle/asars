@@ -25,16 +25,15 @@ impl Task {
 }
 
 fn render_tasks(tasks: &[Task]) {
-    println!("\n--- Your Tasks ---");
+    println!("\nYour Tasks\n");
     for (i, task) in tasks.iter().enumerate() {
         println!(
-            "\n{}. [{}] {}",
+            "{}. [{}] {}\n",
             i + 1,
             task.due_on.as_deref().unwrap_or("None"),
             task.name
         );
     }
-    println!("\n------------------\n");
 }
 
 pub async fn list_tasks(token: &str) -> Result<(), Box<dyn std::error::Error>> {

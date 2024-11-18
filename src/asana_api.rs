@@ -1,4 +1,7 @@
-use reqwest::header::{HeaderMap, AUTHORIZATION};
+use reqwest::{
+    header::{HeaderMap, AUTHORIZATION},
+    Client,
+};
 use serde::Deserialize;
 use std::error::Error;
 
@@ -13,7 +16,7 @@ pub struct Workspace {
 }
 
 pub async fn fetch_workspaces(token: &str) -> Result<Vec<Workspace>, Box<dyn Error>> {
-    let client = reqwest::Client::new();
+    let client = Client::new();
     let mut headers = HeaderMap::new();
     headers.insert(AUTHORIZATION, format!("Bearer {}", token).parse()?);
 
