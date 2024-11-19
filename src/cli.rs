@@ -23,6 +23,6 @@ pub enum Commands {
         get: Option<String>,
     },
 
-    #[command(alias = "t")]
+    #[command(alias = "ts")]
     Tasks,
 }
