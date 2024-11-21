@@ -51,6 +51,7 @@ fn render_tasks(tasks: &[Task]) {
 
         println!("{}. [{}] {}", i + 1, colorized_due_date, task.name);
     });
+    println!();
 }
 
 pub async fn list_tasks(token: &str) -> Result<(), Box<dyn std::error::Error>> {
