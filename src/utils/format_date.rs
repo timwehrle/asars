@@ -1,4 +1,4 @@
-use chrono::{Duration, NaiveDate};
+use chrono::{Datelike, Duration, NaiveDate};
 
 pub fn format_date(date_str: &str, format: &str) -> String {
     let parsed_date = NaiveDate::parse_from_str(date_str, "%Y-%m-%d").ok();
@@ -8,7 +8,23 @@ pub fn format_date(date_str: &str, format: &str) -> String {
         Some(date) if date == today => "Today".to_string(),
         Some(date) if date == today - Duration::days(1) => "Yesterday".to_string(),
         Some(date) if date == today + Duration::days(1) => "Tomorrow".to_string(),
-        Some(date) => date.format(format).to_string(),
+        Some(date) => {
+            let days_diff = (date - today).num_days();
+            if days_diff > 0 && days_diff < 7 {
+                let weekday = date.weekday();
+                match weekday {
+                    chrono::Weekday::Mon => "Mon".to_string(),
+                    chrono::Weekday::Tue => "Tue".to_string(),
+                    chrono::Weekday::Wed => "Wed".to_string(),
+                    chrono::Weekday::Thu => "Thu".to_string(),
+                    chrono::Weekday::Fri => "Fri".to_string(),
+                    chrono::Weekday::Sat => "Sat".to_string(),
+                    chrono::Weekday::Sun => "Sun".to_string(),
+                }
+            } else {
+                date.format(format).to_string()
+            }
+        }
         None => "Unknown".to_string(),
     }
 }
