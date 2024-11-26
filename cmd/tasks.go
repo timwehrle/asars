@@ -13,6 +13,7 @@ import (
 
 var TasksCmd = &cobra.Command{
 	Use:     "tasks",
+	Short:   "Get all Asana tasks assigned to you",
 	Aliases: []string{"ts"},
 	Run: func(cmd *cobra.Command, args []string) {
 		token, err := auth.GetToken()
