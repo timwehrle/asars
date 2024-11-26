@@ -9,12 +9,13 @@ import (
 	"github.com/timwehrle/asars/pkg/api"
 	"github.com/timwehrle/asars/pkg/asars"
 	"github.com/timwehrle/asars/pkg/auth"
+	"github.com/timwehrle/asars/utils"
 )
 
 var tasks []api.Task
 
 var TaskCmd = &cobra.Command{
-	Use:     "task",
+	Use:     "task [index]",
 	Aliases: []string{"t"},
 	Short:   "Get a single Asana task with details by index",
 	Long:    "Get a single Asana task with details by index. If no index is provided, the first task will be shown.",
@@ -43,13 +44,14 @@ var TaskCmd = &cobra.Command{
 			}
 		}
 
-		if len(args) == 0 {
-			if len(tasks) > 0 {
-				task := tasks[0]
-				fmt.Println("Task Details (First Task):")
-				fmt.Printf("ID: %s\nName: %s\nDue: %s\n", task.GID, task.Name, task.DueOn)
-			}
-		} else {
+		if len(args) == 0 && len(tasks) > 0 {
+			task := tasks[0]
+			fmt.Println("Task Details (First Task):")
+			fmt.Printf("ID: %s\nName: %s\nDue: %s\n", task.GID, task.Name, task.DueOn)
+			return
+		}
+
+		if len(args) > 0 {
 			index, err := strconv.Atoi(args[0])
 			if err != nil || index < 1 || index > len(tasks) {
 				fmt.Printf("Invalid index. Please choose a number between 1 and %d\n", len(tasks))
@@ -57,8 +59,47 @@ var TaskCmd = &cobra.Command{
 			}
 
 			task := tasks[index-1]
-			fmt.Println("Task Details:")
-			fmt.Printf("ID: %s\nName: %s\nDue: %s\n", task.GID, task.Name, task.DueOn)
+			detailedTask, err := client.GetTask(workspace, task.GID)
+			if err != nil {
+				fmt.Println("Error getting task details:", err)
+				return
+			}
+
+			fmt.Printf("%s [%s], %s\n", utils.BoldUnderline.Sprint(detailedTask.Name), utils.FormatDate(detailedTask.DueOn), displayProjects(detailedTask.Projects))
+			fmt.Println(displayTags(detailedTask.Tags))
+
+			fmt.Print(displayNotes(detailedTask.Notes))
 		}
 	},
+}
+
+func displayProjects(projects []api.Project) string {
+	if len(projects) > 0 {
+		var projectNames []string
+		for _, project := range projects {
+			projectNames = append(projectNames, project.Name)
+		}
+		return "Projects: " + fmt.Sprintf("%s", projectNames)
+	}
+
+	return "Projects: None"
+}
+
+func displayTags(tags []api.Tag) string {
+	if len(tags) > 0 {
+		var tagNames []string
+		for _, tag := range tags {
+			tagNames = append(tagNames, tag.Name)
+		}
+		return "Tags: " + fmt.Sprintf("%s", tagNames)
+	}
+	return "Tags: None"
+}
+
+func displayNotes(notes string) string {
+	if notes != "" {
+		return fmt.Sprintf("\n%s\n", notes)
+	}
+
+	return ""
 }
