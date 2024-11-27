@@ -12,7 +12,14 @@ import (
 	"github.com/timwehrle/asars/utils"
 )
 
-var tasks []api.Task
+var (
+	showComments bool
+	tasks        []api.Task
+)
+
+func init() {
+	TaskCmd.Flags().BoolVarP(&showComments, "comments", "c", false, "Show comments for the task")
+}
 
 var TaskCmd = &cobra.Command{
 	Use:     "task [index]",
@@ -69,6 +76,23 @@ var TaskCmd = &cobra.Command{
 			fmt.Println(displayTags(detailedTask.Tags))
 
 			fmt.Print(displayNotes(detailedTask.Notes))
+
+			if showComments {
+				comments, err := client.GetStories(workspace, detailedTask.GID)
+				if err != nil {
+					fmt.Println("Error getting comments:", err)
+					return
+				}
+
+				if len(comments) > 0 {
+					fmt.Println("Comments:")
+					for _, comment := range comments {
+						fmt.Printf("%s: %s\n", comment.CreatedBy.Name, comment.Text)
+					}
+				} else {
+					fmt.Println("Comments: None")
+				}
+			}
 		}
 	},
 }
