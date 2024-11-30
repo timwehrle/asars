@@ -2,6 +2,7 @@ package utils
 
 import "github.com/fatih/color"
 
+// Color and style variables
 var (
 	Green         = color.New(color.FgGreen)
 	Blue          = color.New(color.FgBlue)
