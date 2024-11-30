@@ -1,6 +1,6 @@
 module github.com/timwehrle/asars
 
-go 1.22.5
+go 1.23.3
 
 require (
 	github.com/fatih/color v1.18.0
