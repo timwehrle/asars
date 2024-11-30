@@ -11,8 +11,8 @@ var (
 	username = "user"
 )
 
+// Set token for Asana
 func SetToken(token string) error {
-	// Set token for Asana
 	err := keyring.Set(service, username, token)
 	if err != nil {
 		return fmt.Errorf("failed to set token: %v", err)
@@ -22,8 +22,8 @@ func SetToken(token string) error {
 	return nil
 }
 
+// Get token for Asana
 func GetToken() (string, error) {
-	// Get token for Asana
 	token, err := keyring.Get(service, username)
 	if err != nil {
 		return "", fmt.Errorf("failed to get token: %v", err)
@@ -32,8 +32,8 @@ func GetToken() (string, error) {
 	return token, nil
 }
 
+// Delete token for Asana
 func DeleteToken() error {
-	// Delete token for Asana
 	err := keyring.Delete(service, username)
 	if err != nil {
 		return fmt.Errorf("failed to delete token: %v", err)
@@ -43,8 +43,27 @@ func DeleteToken() error {
 	return nil
 }
 
+// Check if token exists
 func HasToken() bool {
-	// Check if token exists
-	token, _ := GetToken()
+	token, err := GetToken()
+	if err != nil {
+		fmt.Println("Error checking token existence:", err)
+		return false
+	}
+	
 	return token != ""
+}
+
+func UpdateToken(token string) error {
+	if !HasToken() {
+		return fmt.Errorf("no token found")
+	}
+
+	err := keyring.Set(service, username, token)
+	if err != nil {
+		return fmt.Errorf("failed to update token: %v", err)
+	}
+	fmt.Println("Token updated successfully.")
+
+	return nil
 }
